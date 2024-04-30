@@ -55,10 +55,10 @@ console.log(filterAssignment(assignment))  //Could not able to display filtered 
 
 
 // Process Submission
-function processSubmissons(submissions, assignments) {
+function processSubmissions(submissions, assignments) {
     const results = {};
     submissions,forEach(function(submission) {
-        const asignment = assignments.find(function(a) {
+        const assignment = assignments.find(function(a) {
             return a.id === submission.assignment_id;
         });
         if(!assignment) return //Ignore submission for assignments not due yet
@@ -76,6 +76,8 @@ function processSubmissons(submissions, assignments) {
     return results;
 }
 
+
+
 // Calculate Weighted Average
 function calculateWeightedAverages(results) {
     for (let learnerId in results) {
@@ -92,14 +94,23 @@ function calculateWeightedAverages(results) {
 function compileLearnerResults(courseInfo, assignmentGroup, learnerSubmissions) {
     try {
         validateCourseAssignment(courseInfo, assignmentGroup);
-        const relevantAssignments = filterRelevantAssignments(assignmentGroup.assignments);
+        const relevantAssignments = relevantAssignments(assignmentGroup.assignments);
         const interimResults = processSubmissions(learnerSubmissions, relevantAssignments);
         const finalResults = calculateWeightedAverages(interimResults);
-        console.log("Learner Results:", JSON.stringify(finalResults, null, 2));
+        
+        // Create a formatted string to display results
+        console.log("Learner Results:");
+        finalResults.forEach(result => {
+            console.log(`ID: ${result.id}, Average: ${result.average.toFixed(2)}`);
+            result.scores.forEach(score => {
+                console.log(`  Assignment ${score.assignmentId}: ${score.score.toFixed(2)}%`);
+            });
+        });
     } catch (error) {
         console.error("Error:", error.message);
     }
 }
+
 
 // Running the Function
 console.assertlog(compileLearnerResults(courseInfo, assignmentGroup, learnerSubmissions));
